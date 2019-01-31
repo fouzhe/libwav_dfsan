@@ -1,0 +1,2 @@
+fun:fread=uninstrumented
+fun:fread=custom

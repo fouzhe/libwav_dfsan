@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "libwav.h"
+#include "io-func.h"
+#include <sanitizer/dfsan_interface.h>
 
 static enum wav_error
 wav_content_read (wav_chunk *chunk, FILE *f)
@@ -244,6 +246,14 @@ wav_read (wav_file *wavfile, const char *filename)
 		return WAV_INVALID_FILE;
 	}
 	
+	dfsan_label hash_label = dfsan_get_label(chunk.chunk_id.hash);
+	int i = 0;
+	for(i = 0; i < label_len; i++)
+	{
+		if(dfsan_has_label(hash_label, mask_label[i]))
+		printf("has %d\n", i);
+	}
+
 	wavfile->header = chunk.content.header;
 	wavfile->datablocks = 0;
 	wavfile->data = NULL;
